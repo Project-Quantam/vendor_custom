@@ -1,4 +1,4 @@
-# Copyright (C) 2012 The CyanogenMod Project
+# Copyright (C) 2012-2016 The CyanogenMod Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -231,9 +231,14 @@ endif
 endif
 
 ifneq ($(USE_CCACHE),)
-    ccache := $(ANDROID_BUILD_TOP)/prebuilts/misc/$(HOST_PREBUILT_TAG)/ccache/ccache
-    # Check that the executable is here.
-    ccache := $(strip $(wildcard $(ccache)))
+    # Detect if the system already has ccache installed to use instead of the prebuilt
+    ccache := $(shell which ccache)
+
+    ifeq ($(ccache),)
+        ccache := $(ANDROID_BUILD_TOP)/prebuilts/misc/$(HOST_PREBUILT_TAG)/ccache/ccache
+        # Check that the executable is here.
+        ccache := $(strip $(wildcard $(ccache)))
+    endif
 endif
 
 KERNEL_CROSS_COMPILE := CROSS_COMPILE="$(ccache) $(KERNEL_TOOLCHAIN_PATH)"
