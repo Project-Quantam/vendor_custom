@@ -13,3 +13,4 @@
 # limitations under the License.
 
 include vendor/custom/config/BoardConfigKernel.mk
+include vendor/custom/config/BoardConfigSoong.mk
