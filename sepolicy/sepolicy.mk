@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-include vendor/custom/config/BoardConfigKernel.mk
-include vendor/custom/config/BoardConfigSoong.mk
-
 # SELinux
-include vendor/custom/sepolicy/sepolicy.mk
+BOARD_PLAT_PRIVATE_SEPOLICY_DIR += \
+    vendor/custom/sepolicy/private
+
+BOARD_PLAT_PUBLIC_SEPOLICY_DIR += \
+    vendor/custom/sepolicy/public
