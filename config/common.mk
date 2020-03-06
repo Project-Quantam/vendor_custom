@@ -14,3 +14,9 @@
 
 # GSM
 $(call inherit-product, vendor/custom/config/gsm.mk)
+
+# Overlays
+DEVICE_PACKAGE_OVERLAYS += \
+    vendor/custom/overlay/aosp
+
+PRODUCT_ENFORCE_RRO_TARGETS := *
