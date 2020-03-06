@@ -12,14 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# GSM
-$(call inherit-product, vendor/custom/config/gsm.mk)
+# Versioning System
+CUSTOM_DATE := $(shell date +%Y%m%d)
+CUSTOM_ROM ?= Prism
+CUSTOM_VERSION := v1.0
 
-# Overlays
-DEVICE_PACKAGE_OVERLAYS += \
-    vendor/custom/overlay/aosp
+ROM_VERSION := $(CUSTOM_ROM)-$(CUSTOM_VERSION)-$(CUSTOM_DATE)
 
-PRODUCT_ENFORCE_RRO_TARGETS := *
-
-# Version
-$(call inherit-product, vendor/custom/config/version.mk)
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.rom.version=$(ROM_VERSION)
