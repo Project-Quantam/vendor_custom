@@ -30,8 +30,11 @@ Merge script for AOSP.
 
 import glob
 import os
+import shutil
+import subprocess
 import sys
 import xml.etree.ElementTree as Et
+
 import git
 
 BASE_URL = "https://android.googlesource.com/platform/"
@@ -71,8 +74,13 @@ def force_sync():
     """ Force sync all the repos that need to be merged. """
     print("Syncing repos")
     for repo in REPOS_TO_MERGE:
-        os.system('rm -rf {0}'.format(repo))
-    os.system('repo sync -c --force-sync -f --no-clone-bundle --no-tag -j$(nproc --all) -q')
+        if os.path.isdir("{}{}".format(WORKING_DIR, repo)):
+            shutil.rmtree("{}{}".format(WORKING_DIR, repo))
+
+    cpu_count = str(os.cpu_count())
+    subprocess.run(
+        ['repo', 'sync', '-c', '--force-sync', '-f', '--no-clone-bundle', '--no-tag', '-j', cpu_count, '-q']
+    )
 
 
 def merge():
@@ -84,13 +92,19 @@ def merge():
         os.chdir("{0}/{1}".format(WORKING_DIR, repo))
         if repo == "build/make":
             repo_str = "build"
-        cmd = 'git pull {0}{1} {2}'.format(BASE_URL, repo_str, BRANCH_STR)
-        ret_val = os.system(cmd)
-        if ret_val:
-            failures.append(repo)
-        else:
+        try:
+            git.cmd.Git().pull('{}{}'.format(BASE_URL, repo_str), BRANCH_STR)
             successes.append(repo)
+        except git.exc.GitCommandError as e:
+            print(e)
+            failures.append(repo)
+
+        except git.exc.GitCommandError as e:
+            print(e)
+            failures.append(repo)
+
     REPOS_RESULTS.update({'Successes': successes, 'Failures': failures})
+
 
 def get_actual_merged_repos():
     """ Gets all the repos that were actually merged and
@@ -104,6 +118,7 @@ def get_actual_merged_repos():
         if BRANCH_STR in result:
             good_repos.append(repo)
     REPOS_RESULTS['Successes'] = good_repos
+
 
 def print_results():
     """ Prints all repositories that will need to be manually fixed. """
@@ -120,6 +135,7 @@ def print_results():
         print("{0} merged successfully! Compile and test before pushing to GitHub.".format(BRANCH_STR))
     elif not REPOS_RESULTS['Failures'] and not REPOS_RESULTS['Successes']:
         print("Unable to retrieve any results.")
+
 
 def main():
     """ Gathers and merges all repos from AOSP and
