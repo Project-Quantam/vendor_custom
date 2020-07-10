@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# GMS
+$(call inherit-product, vendor/google/gms/gms-vendor.mk)
+
 # GSM
 $(call inherit-product, vendor/custom/config/gsm.mk)
 
